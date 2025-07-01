@@ -15,7 +15,7 @@ env:
   TOKEN: ${{ secrets.TOKEN }}
   #LEANTIME_URL: "${{ ALB_ENDPOINT }}"
   # GATUS_URL: ""
-
+  IMAGE_TAG: ${{ github.sha }}
 
 jobs:
   deploy_gatus:
@@ -61,7 +61,7 @@ jobs:
           docker push --all-tags $ECR_REGISTRY/$ECR_REPOSITORY
           echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
           echo "IMAGE_FULL_URI=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_ENV
-
+          echo "IMAGE_TAG=${GITHUB_SHA}" >> $GITHUB_ENV
       
 
   deploy_eks:
@@ -80,10 +80,6 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
           aws-region: ${{ env.AWS_REGION }}
-
-      - name: Login to Amazon ECR
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v1
 
       - name: Update Deployment Manifests
         run: |
@@ -104,6 +100,7 @@ jobs:
           docker push --all-tags $ECR_REGISTRY/$ECR_REPOSITORY
           echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
           echo "IMAGE_FULL_URI=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_ENV
+          echo "IMAGE_TAG=$IMAGE_TAG"
 
       - name: Apply Kubernetes 
         run: |
