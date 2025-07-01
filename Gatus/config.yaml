@@ -15,7 +15,7 @@ endpoints:
   #       description: "Sensei, Leantime is down! Please check and fix it."
 
   - name: Gatus
-    url: $ {{ secret.GATUS_URL}} 
+    url: $ {{ac5f5597eb7d840b693bc229d4766c02-1306823985.us-east-1.elb.amazonaws.com}} 
     interval: 1m
     conditions: 
       - "[STATUS] == 200"
