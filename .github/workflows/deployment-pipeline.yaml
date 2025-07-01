@@ -15,7 +15,7 @@ env:
   TOKEN: ${{ secrets.TOKEN }}
   #LEANTIME_URL: "${{ ALB_ENDPOINT }}"
   # GATUS_URL: ""
-  IMAGE_TAG: ${{ github.sha }}
+
 
 jobs:
   deploy_gatus:
@@ -61,7 +61,7 @@ jobs:
           docker push --all-tags $ECR_REGISTRY/$ECR_REPOSITORY
           echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
           echo "IMAGE_FULL_URI=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_ENV
-          echo "IMAGE_TAG=${GITHUB_SHA}" >> $GITHUB_ENV
+          
       
 
   deploy_eks:
@@ -81,26 +81,17 @@ jobs:
           aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
           aws-region: ${{ env.AWS_REGION }}
 
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
       - name: Update Deployment Manifests
         run: |
           sed -i "s|<image-gatus>|$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG|g" EKS/gatus-deployment.yaml
           sed -i "s|<image-leantime>|leantime/leantime:latest|g" EKS/leantime-deployment-secret.yaml
           echo "Deployment manifests updated."
           cat EKS/gatus-deployment.yaml
-          cat EKS/leantime-deployment-secret.yaml
-          
-
-      - name: Build, tag, and push image to Amazon ECR
-        id: build-image
-        env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-        run: |
-          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG ./EKS 
-          docker tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:latest
-          docker push --all-tags $ECR_REGISTRY/$ECR_REPOSITORY
-          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
-          echo "IMAGE_FULL_URI=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_ENV
-          echo "IMAGE_TAG=$IMAGE_TAG"
+          cat EKS/leantime-deployment-secret.yaml  
 
       - name: Apply Kubernetes 
         run: |
