@@ -1,29 +1,17 @@
 alerting:
   github:
-    token: "${TOKEN}" 
-
+    token: "${TOKEN}"
 
 endpoints:
-  # - name: Leantime
-  #   url: $ {{ secret.LEANTIME_URL }} 
-  #   interval: 30s
-  #   conditions:
-  #     - "[STATUS] == 200"
-  #     - "[RESPONSE_TIME] < 300"
-  #   alerts:
-  #     - type: github
-  #       description: "Sensei, Leantime is down! Please check and fix it."
-
-  - name: Gatus
-    url: "http://a57c3dea1905c4747bed3166c0cc30c8-1741895396.us-east-1.elb.amazonaws.com"
-    interval: 1m
-    conditions: 
+  - name: Leantime
+    url: "http://ae165dda17c224fc0a9f2f6462746f5d-969077532.us-east-1.elb.amazonaws.com"
+    interval: 30s
+    conditions:
       - "[STATUS] == 200"
-      - "[RESPONS_TIME] < 500"
+      - "[RESPONSE_TIME] < 300"
     alerts:
       - type: github
         failureThreshold: 3
         successThreshold: 5
         send-on-resolved: true
-        description: "Gatus is down! Please check and fix it."
-
+        description: "Leantime is down!"
