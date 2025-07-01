@@ -15,7 +15,7 @@ env:
   TOKEN: ${{ secrets.TOKEN }}
   LEANTIME_URL: "http://ae165dda17c224fc0a9f2f6462746f5d-969077532.us-east-1.elb.amazonaws.com"
   GATUS_URL: "http://a45d88f58e0464afca9161846482f1db-1969528650.us-east-1.elb.amazonaws.com"
-
+  ECR_REGISTRY: 126189343233.dkr.ecr.us-east-1.amazonaws.com
 
 jobs:
   deploy_gatus:
@@ -35,9 +35,11 @@ jobs:
           aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
           aws-region: ${{ env.AWS_REGION }}
 
-      - name: Login to Amazon ECR
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v1
+      - name: Manual Docker login to Amazon ECR
+        run: |
+          aws ecr get-login-password --region $AWS_REGION | \
+          docker login --username AWS --password-stdin $ECR_REGISTRY
+
 
       - name: Update Configuration
         run: |
