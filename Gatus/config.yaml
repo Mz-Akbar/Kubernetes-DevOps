@@ -19,7 +19,7 @@ endpoints:
     interval: 1m
     conditions: 
       - "[STATUS] == 200"
-      - "[RESPONS_TIME] < 500"
+      - "[RESPONSE_TIME] < 500"
     alerts:
       - type: github
         failureThreshold: 3
