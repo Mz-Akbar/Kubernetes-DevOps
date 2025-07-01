@@ -4,7 +4,7 @@ alerting:
 
 endpoints:
   - name: Leantime
-    url: "http://ae165dda17c224fc0a9f2f6462746f5d-969077532.us-east-1.elb.amazonaws.com"
+    url: <leantime-url>
     interval: 30s
     conditions:
       - "[STATUS] == 200"
@@ -15,3 +15,17 @@ endpoints:
         successThreshold: 5
         send-on-resolved: true
         description: "Leantime is down!"
+
+  - name: Gatus
+    url: "<gatus-url>" 
+    interval: 1m
+    conditions: 
+      - "[STATUS] == 200"
+      - "[RESPONS_TIME] < 500"
+    alerts:
+      - type: github
+        title: "Gatus Alert"
+        failureThreshold: 3
+        successThreshold: 5
+        send-on-resolved: true
+        description: "Sensei, Gatus is down! Please check and fix it."

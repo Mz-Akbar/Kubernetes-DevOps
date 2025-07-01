@@ -13,8 +13,8 @@ env:
   AWS_REGION: "us-east-1"
   ECR_REPOSITORY: "lks-gatus"
   TOKEN: ${{ secrets.TOKEN }}
-  #LEANTIME_URL: "${{ ALB_ENDPOINT }}"
-  # GATUS_URL: ""
+  LEANTIME_URL: "http://ae165dda17c224fc0a9f2f6462746f5d-969077532.us-east-1.elb.amazonaws.com"
+  GATUS_URL: "http://a45d88f58e0464afca9161846482f1db-1969528650.us-east-1.elb.amazonaws.com"
 
 
 jobs:
@@ -42,7 +42,7 @@ jobs:
       - name: Update Configuration
         run: |
           sed -i "s|<github-token>|$TOKEN|g" Gatus/config.yaml
-          sed -i "s|<leantime-url>|$LEANTIME_URL|g" EKS/leantime-deployment-secret.yaml
+          sed -i "s|<leantime-url>|$LEANTIME_URL|g" Gatus/config.yaml
           sed -i "s|<gatus-url>|$GATUS_URL|g" Gatus/config.yaml
           echo "Cofiguration updated."
           cat Gatus/config.yaml
@@ -85,17 +85,25 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
 
+      - name: Get Short Commit Hash
+        run: echo "IMAGE_TAG=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+        shell: bash
+
       - name: Update Deployment Manifests
+        env: 
+        ECR_REGISTRY:${{ steps.login-ecr.outputs.registry }}
         run: |
-          sed -i "s|<image-gatus>|$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG|g" EKS/gatus-deployment.yaml
+          sed -i "s|<image-gatus>|$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG|g" EKS-gatus-deployment.yaml
           sed -i "s|<image-leantime>|leantime/leantime:latest|g" EKS/leantime-deployment-secret.yaml
-          echo "Deployment manifests updated."
           cat EKS/gatus-deployment.yaml
           cat EKS/leantime-deployment-secret.yaml 
 
-      - name: Apply Kubernetes 
+      - name: Update file kube config
         run: |
           aws eks update-kubeconfig --region $AWS_REGION --name eks-cluster-01
+
+      - name: Apply Kubernetes 
+        run: | 
           kubectl apply -f EKS/gatus-deployment.yaml
           kubectl apply -f EKS/gatus-service.yaml
           kubectl apply -f EKS/leantime-deployment-secret.yaml
