@@ -35,9 +35,12 @@ jobs:
           aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
           aws-region: ${{ env.AWS_REGION }}
 
-      - name: Login to Amazon ECR
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v1
+      - name: Manual Docker login to ECR
+        run: |
+          aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $ECR_REGISTRY
+        env:
+          ECR_REGISTRY: 126189343233.dkr.ecr.us-east-1.amazonaws.com/lks-gatus
+          AWS_REGION: us-east-1
 
       - name: Update Configuration
         run: |
@@ -53,8 +56,8 @@ jobs:
 
       - name: Build, tag, and push image to Amazon ECR
         id: build-image
-        env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        # env:
+        #   ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         run: |
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG ./Gatus
           docker tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:latest
@@ -102,6 +105,11 @@ jobs:
       - name: Update file kube config
         run: |
           aws eks update-kubeconfig --region $AWS_REGION --name eks-cluster-01
+          kubectl delete -f EKS/gatus-deployment.yaml
+          kubectl delete -f EKS/gatus-service.yaml
+          kubectl delete -f EKS/leantime-deployment-secret.yaml
+          kubectl delete -f EKS/leantime-secret.yaml
+          kubectl delete -f EKS/leantime-service.yaml
 
       - name: Apply Kubernetes 
         run: | 
