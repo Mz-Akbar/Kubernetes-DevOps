@@ -1,3 +1,4 @@
 FROM twinproduction/gatus:latest
 
-COPY Gatus/config.yaml
+RUN mkdir -p /config
+COPY ./config.yaml /config/config.yaml
