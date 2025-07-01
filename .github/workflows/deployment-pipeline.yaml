@@ -95,6 +95,7 @@ jobs:
 
       - name: Apply Kubernetes 
         run: |
+          aws eks update-kubeconfig --region $AWS_REGION --name eks-cluster-01
           kubectl apply -f EKS/gatus-deployment.yaml
           kubectl apply -f EKS/gatus-service.yaml
           kubectl apply -f EKS/leantime-deployment-secret.yaml
