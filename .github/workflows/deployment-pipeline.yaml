@@ -48,8 +48,11 @@ jobs:
           cat Gatus/config.yaml
 
       - name: Get Short Commit Hash
-        run: echo "IMAGE_TAG=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
-        shell: bash
+        id: set-tag
+        run: echo "image_tag=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+
+        outputs:
+          image_tag: ${{ steps.set-tag.outputs.image_tag }}
 
       - name: Build, tag, and push image to Amazon ECR
         id: build-image
@@ -93,9 +96,8 @@ jobs:
           cat EKS/gatus-deployment.yaml
           cat EKS/leantime-deployment-secret.yaml  
 
-      - name: Get Short Commit Hash
-        run: echo "IMAGE_TAG=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
-        shell: bash
+      - env:
+        MAGE_TAG: ${{ needs.deploy_gatus.outputs.image_tag }}
 
       - name: Build, tag, and push image to Amazon ECR
         id: build-image
