@@ -1,24 +1,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: leantime
+  name: gatus
   labels:
-    app: leantime
+    app: gatus
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: leantime
+      app: gatus
   template:
     metadata:
       labels:
-        app: leantime
+        app: gatus
     spec:
       containers:
-      - name: leantime
-        image: <image-leantime>
+      - name: gatus
+        image: <image-gatus>
         ports:
         - containerPort: 8080
-        envFrom:
-            - secretRef:
-                name: leantime-secret
