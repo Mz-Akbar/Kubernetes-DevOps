@@ -16,6 +16,6 @@ spec:
     spec:
       containers:
       - name: gatus
-        image: 126189343233.dkr.ecr.us-east-1.amazonaws.com/lks-gatus:771b982
+        image: <image-gatus>
         ports:
         - containerPort: 8080
