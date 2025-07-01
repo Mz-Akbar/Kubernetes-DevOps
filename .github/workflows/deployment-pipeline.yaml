@@ -7,14 +7,14 @@ on:
     paths:
       - "EKS/**" 
       - "Gatus/**"
+      - ".github/workflows/deployment-pipeline.yaml"
       
 env:
   AWS_REGION: "us-east-1"
   ECR_REPOSITORY: "lks-gatus"
-  ECS_CLUSTER: "lks-oss-cluster"
   TOKEN: ${{ secrets.TOKEN }}
-  LEANTIME_URL: "http://${{ secrets.ALB_ENDPOINT }}"
-  GATUS_URL: "http://${{ secrets.ALB_ENDPOINT }}:8080" 
+  LEANTIME_URL: "${{ ALB_ENDPOINT }}"
+  GATUS_URL: "${{ ALB_ENDPOINT }}:8080" 
 
 
 jobs:
@@ -45,7 +45,7 @@ jobs:
           sed -i "s|<leantime-url>|$LEANTIME_URL|g" EKS/leantime-deployment-secret.yaml
           sed -i "s|<gatus-url>|$GATUS_URL|g" Gatus/config.yaml
           echo "Cofiguration updated."
-          cat gatus/config/config.yaml
+          cat Gatus/config.yaml
 
       - name: Get Short Commit Hash
         run: echo "IMAGE_TAG=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
@@ -56,7 +56,7 @@ jobs:
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         run: |
-          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG ./gatus
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG ./Gatus
           docker tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:latest
           docker push --all-tags $ECR_REGISTRY/$ECR_REPOSITORY
           echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
@@ -64,9 +64,10 @@ jobs:
 
       
 
-  deploy_leantime:
-    name: Deploy Leantime App
+  deploy_eks:
+    name: Deploy eks
     runs-on: ubuntu-latest
+    needs: deploy_gatus
     environment: dev
     steps:
       - name: Checkout
