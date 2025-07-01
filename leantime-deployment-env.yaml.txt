@@ -9,7 +9,6 @@ spec:
   selector:
     matchLabels:
       app: leantime
-
   template:
     metadata:
       labels:
@@ -19,14 +18,15 @@ spec:
       - name: leantime
         image: leantime/leantime:latest
         ports:
-        - containerPort: 80
+        - containerPort: 8080
         env:
-            - name: LEANTIME_DB_HOST
+            - name: LEAN_DB_HOST
               value: "my-db-cluster.cluster-ccjodszvjtjj.us-east-1.rds.amazonaws.com"
-            - name: LEANTIME_DB_USER
-              value: "admin"
-            - name: LEANTIME_DB_PASSWORD
+            - name: LEAN_DB_USER
+              value: "YWRtaW4="
+            - name: LEAN_DB_PASSWORD
               value: "password_123321"
-            - name: LEANTIME_DB_NAME
+            - name: LEAN_DB_DATABASE
               value: "mydb"
-
+            - name: LEAN_DB_PORT
+              value: "3306"
