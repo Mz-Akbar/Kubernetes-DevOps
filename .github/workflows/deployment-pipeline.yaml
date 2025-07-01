@@ -93,6 +93,10 @@ jobs:
           cat EKS/gatus-deployment.yaml
           cat EKS/leantime-deployment-secret.yaml  
 
+      - name: Get Short Commit Hash
+        run: echo "IMAGE_TAG=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+        shell: bash
+
       - name: Build, tag, and push image to Amazon ECR
         id: build-image
         env:
