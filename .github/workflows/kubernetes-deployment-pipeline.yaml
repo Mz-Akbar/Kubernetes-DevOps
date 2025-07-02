@@ -14,8 +14,8 @@ env:
   AWS_REGION: "us-east-1"
   ECR_REPOSITORY: "my-repo"
   TOKEN: ${{ secrets.TOKEN }} 
-  # GATUS_URL: "http://a64879e791eb24ef29155149a3edafc3-1799427462.us-east-1.elb.amazonaws.com"
-  # LEANTIME_URL: "http://ad3b9398c793b494788a6e3e2ebd8cc2-1257053076.us-east-1.elb.amazonaws.com"
+  GATUS_URL: "http://a30d3ce2f23d649ddbf10639b1570f34-589004416.us-east-1.elb.amazonaws.com"
+  LEANTIME_URL: "http://a9e131978198148a7bc797f262114bf3-453576775.us-east-1.elb.amazonaws.com"
 
 
 jobs:
@@ -116,11 +116,11 @@ jobs:
           kubectl apply -f eks/leantime-service.yaml
           echo "Kubernetes applied."
 
-      - name: Get LoadBalancer URLs
-        run: |
-          GATUS_URL=$(kubectl get svc gatus-service -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
-          LEANTIME_URL=$(kubectl get svc leantime-service -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
-          echo "GATUS_URL=http://$GATUS_URL" >> $GITHUB_ENV
-          echo "LEANTIME_URL=http://$LEANTIME_URL" >> $GITHUB_ENV
+      # - name: Get LoadBalancer URLs
+      #   run: |
+      #     GATUS_URL=$(kubectl get svc gatus-service -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
+      #     LEANTIME_URL=$(kubectl get svc leantime-service -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
+      #     echo "GATUS_URL=http://$GATUS_URL" >> $GITHUB_ENV
+      #     echo "LEANTIME_URL=http://$LEANTIME_URL" >> $GITHUB_ENV
 
       
