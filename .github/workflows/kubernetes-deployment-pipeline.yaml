@@ -14,8 +14,8 @@ env:
   AWS_REGION: "us-east-1"
   ECR_REPOSITORY: "my-repo"
   TOKEN: ${{ secrets.TOKEN }} 
-  # GATUS_URL: "http://a64879e791eb24ef29155149a3edafc3-1799427462.us-east-1.elb.amazonaws.com"
-  # LEANTIME_URL: "http://ad3b9398c793b494788a6e3e2ebd8cc2-1257053076.us-east-1.elb.amazonaws.com"
+  #GATUS_URL: "http://a70ef3c23a9094cf5ace748a5f70006f-762955534.us-east-1.elb.amazonaws.com"
+  LEANTIME_URL: "http://a7e294462adaf4e78a98c5af475a4878-685547219.us-east-1.elb.amazonaws.com"
 
 
 jobs:
@@ -38,24 +38,7 @@ jobs:
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
-
-      - name: Update Kubeconfig file
-        run: |
-          aws eks update-kubeconfig --region us-east-1 --name eks-cluster-02
-
-      - name: Get LoadBalancer URLs
-        run: |
-          GATUS_URL=$(kubectl get svc gatus-service -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
-          LEANTIME_URL=$(kubectl get svc leantime-service -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
-          echo "GATUS_URL=http://$GATUS_URL" >> $GITHUB_ENV
-          echo "LEANTIME_URL=http://$LEANTIME_URL" >> $GITHUB_ENV
-
-      - name: Replace placeholders in config.yaml
-        run: |
-          sed -i "s|<leantime-url>|$LEANTIME_URL|g" gatus/config.yaml
-          sed -i "s|<gatus-url>|$GATUS_URL|g" gatus/config.yaml
-          cat gatus/config.yaml  
-
+        
 
       - name: Update Configuration
         run: |
@@ -119,19 +102,16 @@ jobs:
         run: |
           aws eks update-kubeconfig --region us-east-1 --name eks-cluster-02
 
-      - name: Delete Kubeconfig file
-        run: |
-          kubectl delete -f eks/gatus-deployment-dev1.yaml
-          kubectl delete -f eks/gatus-service.yaml
-          kubectl delete -f eks/leantime-deployment-dev1.yaml
-          kubectl delete -f eks/leantime-service.yaml
+      # - name: Delete Kubeconfig file
+      #   run: |
+      #     kubectl delete -f eks/gatus-deployment-dev1.yaml
+      #     kubectl delete -f eks/gatus-service.yaml
+      #     kubectl delete -f eks/leantime-deployment-dev1.yaml
+      #     kubectl delete -f eks/leantime-service.yaml
 
       - name: Apply Kubeconfig file
         run: |
-          kubectl apply -f eks/gatus-deployment-dev1.yaml
-          kubectl apply -f eks/gatus-service.yaml
           kubectl apply -f eks/leantime-deployment-dev1.yaml
-          kubectl apply -f eks/leantime-service.yaml
           echo "Kubernetes applied."
 
     
