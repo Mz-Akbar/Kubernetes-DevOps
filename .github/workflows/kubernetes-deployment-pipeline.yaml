@@ -14,8 +14,8 @@ env:
   AWS_REGION: "us-east-1"
   ECR_REPOSITORY: "my-repo"
   TOKEN: ${{ secrets.TOKEN }} 
-  # GATUS_URL: "http://a64879e791eb24ef29155149a3edafc3-1799427462.us-east-1.elb.amazonaws.com"
-  # LEANTIME_URL: "http://ad3b9398c793b494788a6e3e2ebd8cc2-1257053076.us-east-1.elb.amazonaws.com"
+  GATUS_URL: "http://a641a018e662248c4b65c0ca33043af2-1845894732.us-east-1.elb.amazonaws.com"
+  LEANTIME_URL: "http://a8257ae31d54643d083e43d1e7a1c222-621202226.us-east-1.elb.amazonaws.com"
 
 
 jobs:
@@ -38,20 +38,7 @@ jobs:
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
-
-      - name: Get LoadBalancer URLs
-        run: |
-          GATUS_URL=$(kubectl get svc gatus-service -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
-          LEANTIME_URL=$(kubectl get svc leantime-service -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
-          echo "GATUS_URL=http://$GATUS_URL" >> $GITHUB_ENV
-          echo "LEANTIME_URL=http://$LEANTIME_URL" >> $GITHUB_ENV
-
-      - name: Replace placeholders in config.yaml
-        run: |
-          sed -i "s|<leantime-url>|$LEANTIME_URL|g" gatus/config.yaml
-          sed -i "s|<gatus-url>|$GATUS_URL|g" gatus/config.yaml
-          cat gatus/config.yaml  
-
+        
 
       - name: Update Configuration
         run: |
