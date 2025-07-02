@@ -18,7 +18,7 @@ spec:
       - name: leantime
         image: <image-leantime>
         ports:
-        - containerPort: 80
+        - containerPort: 8080
         env:
             - name: LEAN_DB_HOST
               value: "db-cluster-01.cluster-ccjodszvjtjj.us-east-1.rds.amazonaws.com"
