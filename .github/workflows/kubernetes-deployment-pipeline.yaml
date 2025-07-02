@@ -98,7 +98,6 @@ jobs:
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         run: |
-        id: build image
           sed -i s"|<image-gatus>|$ECR_REGISTRY/&ECR_REPOSITORY:IMAGE_TAG|g" eks/gatus-deployment-dev1.yaml
           sed -i s"|<image-leantime|leantime/leantime:latest|g" eks/leantime-deployment-dev1.yaml
           cat eks/gatus-deployment-dev1.yaml
