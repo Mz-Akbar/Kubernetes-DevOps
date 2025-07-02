@@ -107,10 +107,7 @@ jobs:
           sed -i "s|<image-leantime>|leantime/leantime:latest|g" EKS/leantime-deployment-secret.yaml
           cat EKS/gatus-deployment.yaml
           cat EKS/leantime-deployment-secret.yaml 
-
-        run: |
-          aws eks update-kubeconfig --region us-east-1 --name eks-cluster-02
-
+          
       - name: Delete Kubeconfig file
         run: |
           kubectl delete -f eks/leantime-deployment-dev1.yaml
