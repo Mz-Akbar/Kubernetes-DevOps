@@ -45,7 +45,7 @@ jobs:
           sed -i "s|<leantime-url>|$LEANTIME_URL|g" gatus/config.yaml
           sed -i "s|<gatus-url>|$GATUS_URL|g" gatus/config.yaml
           echo "Cofiguration updated."
-          cat gatus/]config.yaml
+          cat gatus/config.yaml
 
       - name: Get Short Commit Hash
         run: echo "IMAGE_TAG=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
