@@ -102,17 +102,17 @@ jobs:
 
       - name: Delete Kubeconfig file
         run: |
-          kubectl delete -f gatus-deployment-dev1.yaml
-          kubectl delete -f gatus-service.yaml
-          kubectl delete -f leantime-deployment-dev1.yaml
-          kubectl delete -f leantime-service.yaml
+          kubectl delete -f eks/gatus-deployment-dev1.yaml
+          kubectl delete -f eks/gatus-service.yaml
+          kubectl delete -f eks/leantime-deployment-dev1.yaml
+          kubectl delete -f eks/leantime-service.yaml
 
       - name: Apply Kubeconfig file
         run: |
-          kubectl apply -f gatus-deployment-dev1.yaml
-          kubectl apply -f gatus-service.yaml
-          kubectl apply -f leantime-deployment-dev1.yaml
-          kubectl apply -f leantime-service.yaml
+          kubectl apply -f eks/gatus-deployment-dev1.yaml
+          kubectl apply -f eks/gatus-service.yaml
+          kubectl apply -f eks/leantime-deployment-dev1.yaml
+          kubectl apply -f eks/leantime-service.yaml
 
       - name: Get LoadBalancer URLs
         run: |
