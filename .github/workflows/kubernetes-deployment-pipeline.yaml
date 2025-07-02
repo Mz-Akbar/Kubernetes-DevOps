@@ -85,7 +85,6 @@ jobs:
         shell: bash
 
       - name: Get LoadBalancer URLs
-        id: Get URL
         run: |
           GATUS_URL=$(kubectl get svc gatus-service -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
           LEANTIME_URL=$(kubectl get svc leantime-service -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
