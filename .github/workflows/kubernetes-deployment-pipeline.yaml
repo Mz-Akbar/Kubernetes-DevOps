@@ -111,8 +111,7 @@ jobs:
 
       - name: Apply Kubeconfig file
         run: |
-          kubectl apply -f eks/gatus-deployment-dev1.yam
-          kubectl apply -f eks/leantime-deployment-dev1.yaml
+          kubectl apply -f eks/gatus-deployment-dev1.yaml
           echo "Kubernetes applied."
 
     
