@@ -14,8 +14,8 @@ env:
   AWS_REGION: "us-east-1"
   ECR_REPOSITORY: "my-repo"
   TOKEN: ${{ secrets.TOKEN }} 
- # GATUS_URL: "<gatus-url>"
-  #LEANTIME_URL: "<leantime-url>"
+  GATUS_URL: "<gatus-url>"
+  LEANTIME_URL: "<leantime-url>"
 
 
 jobs:
@@ -80,10 +80,6 @@ jobs:
           aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
           aws-region: ${{ env.AWS_REGION }}
 
-      - name: Login to Amazon ECR
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v1
-
 
       - name: Get Short Commit Hash
         run: echo "IMAGE_TAG=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
@@ -118,6 +114,7 @@ jobs:
           kubectl apply -f eks/gatus-service.yaml
           kubectl apply -f eks/leantime-deployment-dev1.yaml
           kubectl apply -f eks/leantime-service.yaml
+          echo "Kubernetes applied."
 
       - name: Get LoadBalancer URLs
         run: |
