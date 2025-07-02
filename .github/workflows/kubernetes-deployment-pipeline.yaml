@@ -124,7 +124,7 @@ jobs:
           kubectl delete -f eks/leantime-service.yaml
           kubectl delete -f eks/leantime-deployment-dev1.yaml
           kubectl delete -f eks/gatus-service.yaml
-          kubectl delete -f eks/leantime-deployment-dev1.yaml
+          kubectl delete -f eks/gatus-deployment-dev1.yaml
 
       - name: Apply Kubeconfig file
         run: |
