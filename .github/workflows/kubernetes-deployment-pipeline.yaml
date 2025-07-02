@@ -101,20 +101,20 @@ jobs:
         run: |
           aws eks update-kubeconfig --region us-east-1 --name eks-cluster-02
 
-      - name: Delete Kubeconfig file
-        run: |
-          kubectl delete -f eks/gatus-deployment-dev1.yaml
-          kubectl delete -f eks/gatus-service.yaml
-          kubectl delete -f eks/leantime-deployment-dev1.yaml
-          kubectl delete -f eks/leantime-service.yaml
-
-      # - name: Apply Kubeconfig file
+      # - name: Delete Kubeconfig file
       #   run: |
-      #     kubectl apply -f eks/gatus-deployment-dev1.yaml
-      #     kubectl apply -f eks/gatus-service.yaml
-      #     kubectl apply -f eks/leantime-deployment-dev1.yaml
-      #     kubectl apply -f eks/leantime-service.yaml
-      #     echo "Kubernetes applied."
+      #     kubectl delete -f eks/gatus-deployment-dev1.yaml
+      #     kubectl delete -f eks/gatus-service.yaml
+      #     kubectl delete -f eks/leantime-deployment-dev1.yaml
+      #     kubectl delete -f eks/leantime-service.yaml
+
+      - name: Apply Kubeconfig file
+        run: |
+          kubectl apply -f eks/gatus-deployment-dev1.yaml
+          kubectl apply -f eks/gatus-service.yaml
+          kubectl apply -f eks/leantime-deployment-dev1.yaml
+          kubectl apply -f eks/leantime-service.yaml
+          echo "Kubernetes applied."
 
       - name: Get LoadBalancer URLs
         run: |
