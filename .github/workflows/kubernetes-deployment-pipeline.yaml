@@ -14,8 +14,8 @@ env:
   AWS_REGION: "us-east-1"
   ECR_REPOSITORY: "my-repo"
   TOKEN: ${{ secrets.TOKEN }} 
-  GATUS_URL: "<gatus-url>"
-  LEANTIME_URL: "<leantime-url>"
+  # GATUS_URL: "<gatus-url>"
+  # LEANTIME_URL: "<leantime-url>"
 
 
 jobs:
