@@ -12,7 +12,7 @@ on:
 
 env:
   AWS_REGION: "us-east-1"
-  ECR_REPOSITORY: "my-repo"
+  ECR_REPOSITORY: "gatus"
   TOKEN: ${{ secrets.TOKEN }} 
   GATUS_URL: "http://a70ef3c23a9094cf5ace748a5f70006f-762955534.us-east-1.elb.amazonaws.com"
   LEANTIME_URL: "http://a7e294462adaf4e78a98c5af475a4878-685547219.us-east-1.elb.amazonaws.com"
@@ -98,7 +98,16 @@ jobs:
           cat eks/leantime-deployment-dev1.yaml
 
 
-      - name: Update Kubeconfig file
+      - name: Update Kubeconfig file name: Update Deployment Manifests
+        id: build-image
+        env: 
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        run: |
+          sed -i "s|<image-gatus>|$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG|g" EKS/gatus-deployment.yaml
+          sed -i "s|<image-leantime>|leantime/leantime:latest|g" EKS/leantime-deployment-secret.yaml
+          cat EKS/gatus-deployment.yaml
+          cat EKS/leantime-deployment-secret.yaml 
+
         run: |
           aws eks update-kubeconfig --region us-east-1 --name eks-cluster-02
 
