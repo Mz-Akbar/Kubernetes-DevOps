@@ -4,8 +4,8 @@ alerting:
 
 
 endpoints:
-  - name: Leantime
-    url: <leantime-url> 
+  - name: leantime
+    url: "<leantime-u0rl>"
     interval: 30s
     conditions:
       - "[STATUS] == 200"
@@ -17,8 +17,8 @@ endpoints:
         send-on-resolved: true
         description: "Leantime is down! Please check and fix it."
 
-  - name: Gatus
-    url: <gatus-url> 
+  - name: latus
+    url: "<gatus-url>" 
     interval: 1m
     conditions: 
       - "[STATUS] == 200"
