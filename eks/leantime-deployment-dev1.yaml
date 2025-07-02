@@ -19,3 +19,13 @@ spec:
         image: <image-leantime>
         ports:
         - containerPort: 80
+        env:
+            - name: LEAN_DB_HOST
+              value: "db-cluster-01.cluster-ccjodszvjtjj.us-east-1.rds.amazonaws.com"
+            - name: LEAN_DB_USER
+              value: "admin"
+            - name: LEAN_DB_PASSWORD
+              value: "password_321"
+            - name: LEAN_DB_DATABASE
+              value: "mydb"
+ 
