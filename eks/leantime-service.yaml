@@ -9,5 +9,6 @@ spec:
   selector:
     app: leantime
   ports:
+    - protocol: TCP
       port: 80
       targetPort: 8080

@@ -12,6 +12,9 @@ endpoints:
       - "[RESPONSE_TIME] < 300"
     alerts:
       - type: github
+        failureThreshold: 3
+        successThreshold: 5
+        send-on-resolved: true
         description: "Leantime is down! Please check and fix it."
 
   - name: Gatus
