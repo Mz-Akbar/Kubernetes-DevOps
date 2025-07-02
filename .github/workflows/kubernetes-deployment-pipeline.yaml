@@ -84,14 +84,7 @@ jobs:
         run: echo "IMAGE_TAG=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
         shell: bash
 
-      - name: Get LoadBalancer URLs
-        run: |
-          GATUS_URL=$(kubectl get svc gatus-service -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
-          LEANTIME_URL=$(kubectl get svc leantime-service -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
-          echo "GATUS_URL=http://$GATUS_URL" >> $GITHUB_ENV
-          echo "LEANTIME_URL=http://$LEANTIME_URL" >> $GITHUB_ENV
-
-
+    
       - name: Build 
         id: build-image
         env:
@@ -120,5 +113,12 @@ jobs:
           kubectl apply -f gatus-service.yaml
           kubectl apply -f leantime-deployment-dev1.yaml
           kubectl apply -f leantime-service.yaml
+
+      - name: Get LoadBalancer URLs
+        run: |
+          GATUS_URL=$(kubectl get svc gatus-service -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
+          LEANTIME_URL=$(kubectl get svc leantime-service -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
+          echo "GATUS_URL=http://$GATUS_URL" >> $GITHUB_ENV
+          echo "LEANTIME_URL=http://$LEANTIME_URL" >> $GITHUB_ENV
 
       
