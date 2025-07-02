@@ -3,6 +3,7 @@ kind: Service
 metadata:
   name: gatus-service
 spec:
+  type: LoadBalancer
   selector:
     app: gatus
   ports:
