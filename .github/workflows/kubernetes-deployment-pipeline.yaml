@@ -39,6 +39,20 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
 
+      - name: Get LoadBalancer URLs
+        run: |
+          GATUS_URL=$(kubectl get svc gatus-service -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
+          LEANTIME_URL=$(kubectl get svc leantime-service -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
+          echo "GATUS_URL=http://$GATUS_URL" >> $GITHUB_ENV
+          echo "LEANTIME_URL=http://$LEANTIME_URL" >> $GITHUB_ENV
+
+      - name: Replace placeholders in config.yaml
+        run: |
+          sed -i "s|<leantime-url>|$LEANTIME_URL|g" gatus/config.yaml
+          sed -i "s|<gatus-url>|$GATUS_URL|g" gatus/config.yaml
+          cat gatus/config.yaml  
+
+
       - name: Update Configuration
         run: |
           sed -i "s|<github-token>|$TOKEN|g" gatus/config.yaml
@@ -116,11 +130,5 @@ jobs:
           kubectl apply -f eks/leantime-service.yaml
           echo "Kubernetes applied."
 
-      - name: Get LoadBalancer URLs
-        run: |
-          GATUS_URL=$(kubectl get svc gatus-service -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
-          LEANTIME_URL=$(kubectl get svc leantime-service -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
-          echo "GATUS_URL=http://$GATUS_URL" >> $GITHUB_ENV
-          echo "LEANTIME_URL=http://$LEANTIME_URL" >> $GITHUB_ENV
-
+    
       

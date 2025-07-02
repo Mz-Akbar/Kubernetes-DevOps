@@ -16,6 +16,6 @@ spec:
     spec:
       containers:
       - name: gatus
-        image: <image-gatus>
+        image: 126189343233.dkr.ecr.us-east-1.amazonaws.com/my-repo:adbf26a
         ports:
         - containerPort: 8080
