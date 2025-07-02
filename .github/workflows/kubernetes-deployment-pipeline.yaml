@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - dev1
-
     paths:
       - "eks/**"
       - "gatus/**"
