@@ -14,8 +14,8 @@ env:
   AWS_REGION: "us-east-1"
   ECR_REPOSITORY: "my-repo"
   TOKEN: ${{ secrets.TOKEN }} 
-  GATUS_URL: "<gatus-url>"
-  LEANTIME_URL: "<leantime-url>"
+ # GATUS_URL: "<gatus-url>"
+  #LEANTIME_URL: "<leantime-url>"
 
 
 jobs:
@@ -83,6 +83,14 @@ jobs:
       - name: Get Short Commit Hash
         run: echo "IMAGE_TAG=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
         shell: bash
+
+      - name: Get LoadBalancer URLs
+        run: |
+          GATUS_URL=$(kubectl get svc gatus-service -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
+          LEANTIME_URL=$(kubectl get svc leantime-service -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
+          echo "GATUS_URL=http://$GATUS_URL" >> $GITHUB_ENV
+          echo "LEANTIME_URL=http://$LEANTIME_URL" >> $GITHUB_ENV
+
 
       - name: Build 
         id: build-image
