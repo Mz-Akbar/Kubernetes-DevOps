@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: gstud-service
+  name: gatus-service
 spec:
   selector:
     app: gatus
