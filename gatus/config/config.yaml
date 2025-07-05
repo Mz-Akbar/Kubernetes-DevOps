@@ -15,7 +15,7 @@ endpoints:
         failureThreshold: 3
         successThreshold: 5
         send-on-resolved: true
-        description: "Leantime is down! Please check and fix it."
+        description: "Sensei, Leantime is down! Please check and fix it."
 
   - name: Gatus
     url: <gatus-url>
@@ -28,5 +28,5 @@ endpoints:
         failureThreshold: 3
         successThreshold: 5
         send-on-resolved: true
-        description: " Gatus is down! Please check and fix it."
+        description: "Sensei, Gatus is down! Please check and fix it."
 
