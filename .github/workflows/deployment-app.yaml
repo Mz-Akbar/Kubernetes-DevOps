@@ -1,0 +1,95 @@
+name: Deploy gatus and leantime apps
+
+on:
+  push:
+    branches:
+      - dev
+    paths:
+      - "gatus/**" 
+      - "eks/**"
+      
+env:
+  AWS_REGION: "us-east-1"
+  ECR_REPOSITORY: "my-repo"
+  TOKEN: ${{ secrets.TOKENS }}
+
+jobs:
+  deploy_gatus:
+    name: Deploy Gatus App
+    runs-on: ubuntu-latest
+    environment: dev
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Update Kubeconfig file
+        run: |
+          aws eks update-kubeconfig --region us-east-1 --name eks-cluster-02
+
+      - name: Get LoadBalancer URLs
+        run: |
+          GATUS_URL=$(kubectl get svc gatus-service -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
+          LEANTIME_URL=$(kubectl get svc leantime-service -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
+          echo "GATUS_URL=http://$GATUS_URL" >> $GITHUB_ENV
+          echo "LEANTIME_URL=http://$LEANTIME_URL" >> $GITHUB_ENV
+      
+      - name: Replace placeholders in config.yaml
+        run: |
+          sed -i "s|<leantime-url>|$LEANTIME_URL|g" gatus/config.yaml
+          sed -i "s|<gatus-url>|$GATUS_URL|g" gatus/config.yaml
+          cat gatus/config.yaml 
+
+      - name: Update Configuration
+        run: |
+          sed -i "s|<github-token>|$TOKEN|g" gatus/config/config.yaml
+          sed -i "s|<leantime-url>|$LEANTIME_URL|g" gatus/config/config.yaml
+          sed -i "s|<gatus-url>|$GATUS_URL|g" gatus/config/config.yaml
+          echo "Cofiguration updated."
+          cat gatus/config/config.yaml
+
+      - name: Get Short Commit Hash
+        run: echo "IMAGE_TAG=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+        shell: bash
+
+      - name: Build, tag, and push image to Amazon ECR
+        id: build-image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        run: |
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG ./gatus
+          docker tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:latest
+          docker push --all-tags $ECR_REGISTRY/$ECR_REPOSITORY
+          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
+          echo "IMAGE_FULL_URI=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_ENV
+
+      - name: Update ECS task definition
+   
+  
+  deploy_leantime:
+    name: Deploy Leantime App
+    runs-on: ubuntu-latest
+    environment: dev
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
+          aws-region: ${{ env.AWS_REGION }}
