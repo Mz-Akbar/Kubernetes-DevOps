@@ -36,6 +36,23 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
 
+      - name: Update Kubeconfig file
+        run: |
+          aws eks update-kubeconfig --region us-east-1 --name eks-cluster-01
+
+      - name: Get LoadBalancer URLs
+        run: |
+          GATUS_URL=$(kubectl get svc gatus-service -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
+          LEANTIME_URL=$(kubectl get svc leantime-service -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
+          echo "GATUS_URL=http://$GATUS_URL" >> $GITHUB_ENV
+          echo "LEANTIME_URL=http://$LEANTIME_URL" >> $GITHUB_ENV
+      
+      - name: Replace placeholders in config.yaml
+        run: |
+          sed -i "s|<leantime-url>|$LEANTIME_URL|g" gatus/config/config.yaml
+          sed -i "s|<gatus-url>|$GATUS_URL|g" gatus/config/config.yaml
+          cat gatus/config.yaml 
+
       - name: Update Configuration
         run: |
           sed -i "s|<github-token>|$TOKEN|g" gatus/config/config.yaml
@@ -98,9 +115,6 @@ jobs:
         run: |
           sed -i "s|<image-gatus>|$IMAGE_FULL_URI|g" eks/gatus-deployment.yaml
    
-      - name: Update Kubeconfig file
-        run: |
-          aws eks update-kubeconfig --region us-east-1 --name eks-cluster-01
 
       - name: kubefile leantime service
         run: |
@@ -114,27 +128,13 @@ jobs:
 
       - name: kubefile gatus service
         run: |
+          kubectl delete -f eks/gatus-service.yaml
           kubectl apply -f eks/gatus-service.yaml
 
       - name: kubefile gatus deployment
         run: |
+          kubectl delete -f eks/gatus-deployment.yaml
           kubectl apply -f eks/gatus-deployment.yaml
 
 
-         - name: Update Kubeconfig file
-        run: |
-          aws eks update-kubeconfig --region us-east-1 --name eks-cluster-01
-
-      - name: Get LoadBalancer URLs
-        run: |
-          GATUS_URL=$(kubectl get svc gatus-service -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
-          LEANTIME_URL=$(kubectl get svc leantime-service -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
-          echo "GATUS_URL=http://$GATUS_URL" >> $GITHUB_ENV
-          echo "LEANTIME_URL=http://$LEANTIME_URL" >> $GITHUB_ENV
-
-      
-      - name: Replace placeholders in config.yaml
-        run: |
-          sed -i "s|<leantime-url>|$LEANTIME_URL|g" gatus/config/config.yaml
-          sed -i "s|<gatus-url>|$GATUS_URL|g" gatus/config/config.yaml
-          cat gatus/config.yaml 
+        
