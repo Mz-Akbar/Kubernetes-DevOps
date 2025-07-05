@@ -49,8 +49,8 @@ jobs:
       
       - name: Replace placeholders in config.yaml
         run: |
-          sed -i "s|<leantime-url>|$LEANTIME_URL|g" gatus/config.yaml
-          sed -i "s|<gatus-url>|$GATUS_URL|g" gatus/config.yaml
+          sed -i "s|<leantime-url>|$LEANTIME_URL|g" gatus/config/config.yaml
+          sed -i "s|<gatus-url>|$GATUS_URL|g" gatus/config/config.yaml
           cat gatus/config.yaml 
 
       - name: Update Configuration
