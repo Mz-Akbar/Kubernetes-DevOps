@@ -7,11 +7,11 @@ on:
     paths:
       - "gatus/**" 
       - "eks/**"
-      
+
 env:
   AWS_REGION: "us-east-1"
   ECR_REPOSITORY: "my-repo"
-  TOKEN: ${{ secrets.TOKENS }}
+  TOKEN: ${{ secrets.TOKEN }}
 
 jobs:
   deploy_gatus:
@@ -75,12 +75,12 @@ jobs:
           echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
           echo "IMAGE_FULL_URI=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_ENV
 
-      - name: Update ECS task definition
-   
+
   
-  deploy_leantime:
+  deploy_eks:
     name: Deploy Leantime App
     runs-on: ubuntu-latest
+    needs: deploy_gatus
     environment: dev
     steps:
       - name: Checkout
@@ -93,3 +93,44 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
           aws-region: ${{ env.AWS_REGION }}
+
+      - name: Get Short Commit Hash
+        run: echo "IMAGE_TAG=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+        shell: bash
+
+
+      - name: Build, tag, and push image to Amazon ECR
+        id: build-image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        run: |
+          sed -i "s|<image-gatus>|$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG|g" eks/gatus-deployment-dev.yaml
+          sed -i "s|<image-leantime>|leantime/leantime:latest|g" eks/leantime-deployment-dev.yaml
+          echo "IMAGE_FULL_URI=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_ENV 
+          cat eks/gatus-deployment-dev1.yaml
+          cat eks/leantime-deployment-dev1.yaml
+
+      - name: Replace image in task definition
+        run: |
+          sed -i "s|REPLACE_ME_IMAGE|$IMAGE_FULL_URI|g" eks/gatus-deployment.yaml
+   
+
+      - name: kubefile leantime service
+        run: |
+          kubectl delete -f eks/leantime-service.yaml
+          kubectl apply -f eks/leantime-deployment.yaml
+
+      - name: kubefile leantime deployment
+        run: |
+          kubectl delete -f eks/leantime-deployment.yaml
+          kubectl apply -f eks/leantime-deployment.yaml
+
+      - name: kubefile gatus service
+        run: |
+          kubectl delete -f eks/gatus-service.yaml
+          kubectl apply -f eks/gatus-service.yaml
+
+      - name: kubefile gatus deployment
+        run: |
+          kubectl delete -f eks/gatus-deployment.yaml
+          kubectl apply -f eks/gatus-deployment.yaml
