@@ -105,11 +105,11 @@ jobs:
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         run: |
-          sed -i "s|<image-gatus>|$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG|g" eks/gatus-deployment-dev.yaml
-          sed -i "s|<image-leantime>|leantime/leantime:latest|g" eks/leantime-deployment-dev.yaml
+          sed -i "s|<image-gatus>|$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG|g" eks/gatus-deployment.yaml
+          sed -i "s|<image-leantime>|leantime/leantime:latest|g" eks/leantime-deployment.yaml
           echo "IMAGE_FULL_URI=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_ENV 
-          cat eks/gatus-deployment-dev1.yaml
-          cat eks/leantime-deployment-dev1.yaml
+          cat eks/gatus-deployment.yaml
+          cat eks/leantime-deployment.yaml
 
       - name: Replace image in task definition
         run: |
