@@ -114,12 +114,10 @@ jobs:
 
       - name: kubefile gatus service
         run: |
-          kubectl delete -f eks/gatus-service.yaml
           kubectl apply -f eks/gatus-service.yaml
 
       - name: kubefile gatus deployment
         run: |
-          kubectl delete -f eks/gatus-deployment.yaml
           kubectl apply -f eks/gatus-deployment.yaml
 
 
