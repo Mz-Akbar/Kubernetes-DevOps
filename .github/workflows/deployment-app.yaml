@@ -51,7 +51,7 @@ jobs:
         run: |
           sed -i "s|<leantime-url>|$LEANTIME_URL|g" gatus/config/config.yaml
           sed -i "s|<gatus-url>|$GATUS_URL|g" gatus/config/config.yaml
-          cat gatus/config.yaml 
+          cat gatus/config/config.yaml 
 
       - name: Update Configuration
         run: |
