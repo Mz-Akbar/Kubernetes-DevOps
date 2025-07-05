@@ -110,11 +110,6 @@ jobs:
           cat eks/gatus-deployment-dev1.yaml
           cat eks/leantime-deployment-dev1.yaml
 
-
-      - name: Print Image URI
-        run: echo "Using image: $IMAGE_FULL_URI"
-
-
       - name: Replace image in task definition
         run: |
           sed -i "s|REPLACE_ME_IMAGE|$IMAGE_FULL_URI|g" eks/gatus-deployment.yaml
