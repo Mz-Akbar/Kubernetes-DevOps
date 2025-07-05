@@ -7,6 +7,7 @@ on:
     paths:
       - "gatus/**" 
       - "eks/**"
+      - ".github/workflows/deployment-app.yaml"
 
 env:
   AWS_REGION: "us-east-1"
@@ -112,7 +113,7 @@ jobs:
 
       - name: Replace image in task definition
         run: |
-          sed -i "s|REPLACE_ME_IMAGE|$IMAGE_FULL_URI|g" eks/gatus-deployment.yaml
+          sed -i "s|<image-gatus>|$IMAGE_FULL_URI|g" eks/gatus-deployment.yaml
    
 
       - name: kubefile leantime service
