@@ -28,5 +28,5 @@ endpoints:
         failureThreshold: 3
         successThreshold: 5
         send-on-resolved: true
-        description: "Sensei, Gatus is down! Please check and fix it."
+        description: " Gatus is down! Please check and fix it."
 
